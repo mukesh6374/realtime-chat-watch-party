@@ -151,6 +151,8 @@ const Home = () => {
     }
   };
 
+  const otherUsersTyping = usersTyping.filter(id => id !== userId);
+
   if (!isConnected) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -191,9 +193,9 @@ const Home = () => {
             isOwnMessage={message.userNickname === user.nickname}
           />
         ))}
-        {usersTyping.length > 0 && usersTyping.some(id => id !== userId) && (
+        {otherUsersTyping.length > 0 && (
           <div className="text-sm text-gray-500 italic">
-            {usersTyping.length === 1
+            {otherUsersTyping.length === 1
               ? "Someone is typing..."
               : "Multiple people are typing..."}
           </div>
