@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   SessionChatMessage,
   SocketEventHandler,
@@ -12,7 +12,7 @@ import { ChatMessage } from "./components/ChatMessage";
 import { JoinRoom } from "./components/JoinRoom";
 import { useChatStore } from "./store/chatStore";
 import { LogOut } from "lucide-react";
-import { FaCopy } from 'react-icons/fa'; // Import the clipboard icon
+import { FaClipboard } from 'react-icons/fa'; // Import the clipboard icon
 
 const Home = () => {
   const {
@@ -22,13 +22,9 @@ const Home = () => {
     roomId,
     user,
     usersTyping,
-    lastRoomId,
-    lastNickname,
     addMessage,
     setIsConnected,
     setRoomId,
-    setLastRoomId,
-    setLastNickname,
     setUser,
     setTypingUsers,
     setUserId,
@@ -36,53 +32,39 @@ const Home = () => {
 
   const clientRef = useRef<TelepartyClient>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [hasSetupEventHandler, setHasSetupEventHandler] = useState(false);
 
   useEffect(() => {
-    const setupClient = () => {
-      const eventHandler: SocketEventHandler = {
-        onConnectionReady: () => {
-          setIsConnected(true);
-          console.log("Connection has been established");
-          if (lastRoomId && lastNickname) {
-            rejoinRoom(lastRoomId, lastNickname);
-          }
-        },
-        onClose: () => {
-          setIsConnected(false);
-          console.log("Socket has been closed");
-          alert("Connection lost. Rejoining the room...");
-        },
-        onMessage: (message) => {
-          console.log("Received message: ", message);
-          if (message.type === "userId") {
-            const { userId } = message.data;
-            setUserId(userId);
-            console.log("User ID received: ", userId);
-          } else if (message.type === SocketMessageTypes.SEND_MESSAGE) {
-            const chatMessage = message.data as SessionChatMessage;
-            addMessage(chatMessage);
-          } else if (message.type === SocketMessageTypes.SET_TYPING_PRESENCE) {
-            const { usersTyping } = message.data;
-            setTypingUsers(usersTyping);
-          }
-        },
-      };
-
-      clientRef.current = new TelepartyClient(eventHandler);
-      setHasSetupEventHandler(true);
+    const eventHandler: SocketEventHandler = {
+      onConnectionReady: () => {
+        setIsConnected(true);
+        console.log("Connection has been established");
+      },
+      onClose: () => {
+        setIsConnected(false);
+        console.log("Socket has been closed");
+        alert("Connection lost. Please reload the page.");
+      },
+      onMessage: (message) => {
+        console.log("Received message: ", message);
+        if (message.type === "userId") {
+          const { userId } = message.data;
+          setUserId(userId);
+          console.log("User ID received: ", userId);
+        } else if (message.type === SocketMessageTypes.SEND_MESSAGE) {
+          const chatMessage = message.data as SessionChatMessage;
+          addMessage(chatMessage);
+        } else if (message.type === SocketMessageTypes.SET_TYPING_PRESENCE) {
+          const { usersTyping } = message.data;
+          setTypingUsers(usersTyping);
+        }
+      },
     };
 
-    if (!hasSetupEventHandler) {
-      setupClient();
-    }
-
+    clientRef.current = new TelepartyClient(eventHandler);
     return () => {
-      if (clientRef.current) {
-        clientRef.current = null;
-      }
+      clientRef.current = null;
     };
-  }, [lastRoomId, lastNickname, hasSetupEventHandler]);
+  }, [addMessage, setIsConnected, setUserId, setTypingUsers]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -98,8 +80,6 @@ const Home = () => {
       console.log("Room joined: ", room);
       setRoomId(roomId);
       setUser({ nickname });
-      setLastRoomId(roomId);
-      setLastNickname(nickname);
     } catch (error) {
       alert("Failed to join room. Please try again.");
     }
@@ -114,22 +94,9 @@ const Home = () => {
       if (roomId) {
         setRoomId(roomId);
         setUser({ nickname });
-        setLastRoomId(roomId);
-        setLastNickname(nickname);
       }
     } catch (error) {
       alert("Failed to create room. Please try again.");
-    }
-  };
-
-  const rejoinRoom = async (roomId: string, nickname: string) => {
-    try {
-      await clientRef.current?.joinChatRoom(nickname, roomId);
-      setRoomId(roomId);
-      setUser({ nickname });
-      console.log("Rejoined the room: ", roomId);
-    } catch (error) {
-      console.error("Failed to rejoin room: ", error);
     }
   };
 
@@ -137,7 +104,7 @@ const Home = () => {
     if (!clientRef.current || !user) return;
 
     try {
-      const sentMessage =  await clientRef.current.sendMessage(
+     const sentMessage =  await clientRef.current.sendMessage(
         SocketMessageTypes.SEND_MESSAGE,
         {
           body: message,
@@ -167,13 +134,9 @@ const Home = () => {
   };
 
   const handleLeaveRoom = () => {
-    if (clientRef.current) {
-      clientRef.current = null;
-    }
+    clientRef.current = null;
     setRoomId(null);
     setUser(null);
-    setLastRoomId(null);
-    setLastNickname(null);
   };
 
   const handleCopyRoomId = () => {
@@ -207,7 +170,7 @@ const Home = () => {
           <h1 className="text-lg font-semibold text-black">
             Chat Room: {roomId}
             <button onClick={handleCopyRoomId} className="ml-2 p-1 text-gray-600 hover:text-blue-500 rounded-full hover:bg-gray-100">
-              <FaCopy className="w-5 h-5" />
+              <FaClipboard className="w-5 h-5" />
             </button>
           </h1>
           <p className="text-sm text-gray-500">Logged in as {user.nickname}</p>
