@@ -2737,6 +2737,11 @@ tapable@^2.2.0:
   resolved "https://registry.yarnpkg.com/tapable/-/tapable-2.2.1.tgz#1967a73ef4060a82f12ab96af86d52fdb76eeca0"
   integrity sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==
 
+teleparty-websocket-lib@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/teleparty-websocket-lib/-/teleparty-websocket-lib-1.0.4.tgz#37669e193f7c8209bff9a3b793bb9ef048d969ad"
+  integrity sha512-49dISFkQddMi1fOgEgbocXwyLWFqvMmPPt4kfN03I0p89xPz0wIZ+xYAL3PBqPJV3CPpH3eKdPHdJQmj8EG5JQ==
+
 thenify-all@^1.0.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/thenify-all/-/thenify-all-1.6.0.tgz#1a1918d402d8fc3f98fbf234db0bcc8cc10e9726"

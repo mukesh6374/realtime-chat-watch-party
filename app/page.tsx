@@ -80,7 +80,7 @@ const Home = () => {
       console.log("Room joined: ", room);
       setRoomId(roomId);
       setUser({ nickname });
-    } catch (error) {
+    } catch {
       alert("Failed to join room. Please try again.");
     }
   };
@@ -95,7 +95,7 @@ const Home = () => {
         setRoomId(roomId);
         setUser({ nickname });
       }
-    } catch (error) {
+    } catch {
       alert("Failed to create room. Please try again.");
     }
   };
@@ -111,7 +111,7 @@ const Home = () => {
         }
       );
       console.log("Message sent: ", sentMessage);
-    } catch (error) {
+    } catch {
       alert("Failed to send message. Please try again.");
     }
   };
@@ -128,7 +128,7 @@ const Home = () => {
       );
 
       console.log("Typing ", typing);
-    } catch (error) {
+    } catch {
       console.error("Failed to update typing status");
     }
   };
